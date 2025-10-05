@@ -28,3 +28,15 @@ int main()
      cout << "Maximum subarray sum is: " << result << endl;
      return 0;
 }
+
+
+
+// ধাপ ১: cs = -2 → cs = 0, largest = 0
+// ধাপ ২: cs = 1 → largest = 1  
+// ধাপ ৩: cs = -2 → cs = 0, largest = 1
+// ধাপ ৪: cs = 4 → largest = 4
+// ধাপ ৫: cs = 3 → largest = 4
+// ধাপ ৬: cs = 5 → largest = 5
+// ধাপ ৭: cs = 6 → largest = 6
+// ধাপ ৮: cs = 1 → largest = 6
+// ধাপ ৯: cs = 5 → largest = 6
