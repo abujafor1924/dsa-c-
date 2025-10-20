@@ -1,0 +1,398 @@
+# টাইম ও স্পেস কমপ্লেক্সিটি - বিস্তারিত টিউটোরিয়াল (C++ সহ)
+
+## ১. টাইম কমপ্লেক্সিটি (Time Complexity)
+
+### কী এবং কেন?
+টাইম কমপ্লেক্সিটি হলো একটি অ্যালগরিদম কতটা সময় নেবে তা বিশ্লেষণ করার পদ্ধতি। এটি ইনপুট সাইজের উপর নির্ভর করে।
+
+### বিগ-ও নোটেশন (Big-O Notation)
+- **O(1)** - Constant Time
+- **O(log n)** - Logarithmic Time  
+- **O(n)** - Linear Time
+- **O(n log n)** - Linearithmic Time
+- **O(n²)** - Quadratic Time
+- **O(2^n)** - Exponential Time
+
+## ২. স্পেস কমপ্লেক্সিটি (Space Complexity)
+এটি অ্যালগরিদম মেমরি কতটা ব্যবহার করে তা বিশ্লেষণ করে।
+
+## ৩. উদাহরণ সহ বিস্তারিত ব্যাখ্যা
+
+### উদাহরণ ১: O(1) - Constant Time
+```cpp
+#include <iostream>
+using namespace std;
+
+// O(1) Time Complexity
+int getFirstElement(int arr[], int n) {
+    return arr[0];  // শুধু প্রথম এলিমেন্ট এক্সেস
+}
+
+// O(1) Space Complexity
+void constantSpace() {
+    int a = 5;      // 4 bytes
+    int b = 10;     // 4 bytes
+    // মোট স্পেস: O(1)
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    cout << "First element: " << getFirstElement(arr, 5) << endl;
+    return 0;
+}
+```
+
+### উদাহরণ ২: O(n) - Linear Time
+```cpp
+#include <iostream>
+using namespace std;
+
+// O(n) Time Complexity
+void printArray(int arr[], int n) {
+    for(int i = 0; i < n; i++) {    // n বার লুপ চলবে
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
+// O(n) Space Complexity
+void linearSpace(int n) {
+    int* arr = new int[n];  // n সাইজের অ্যারে
+    // মোট স্পেস: O(n)
+    
+    for(int i = 0; i < n; i++) {
+        arr[i] = i;
+    }
+    
+    delete[] arr;  // মেমরি ফ্রি
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    printArray(arr, 5);
+    linearSpace(5);
+    return 0;
+}
+```
+
+### উদাহরণ ৩: O(n²) - Quadratic Time
+```cpp
+#include <iostream>
+using namespace std;
+
+// O(n²) Time Complexity
+void printPairs(int arr[], int n) {
+    for(int i = 0; i < n; i++) {           // n বার
+        for(int j = 0; j < n; j++) {       // n বার
+            cout << "(" << arr[i] << "," << arr[j] << ") ";
+        }
+        cout << endl;
+    }
+    // মোট: n * n = O(n²)
+}
+
+// O(n²) Space Complexity
+void quadraticSpace(int n) {
+    int** matrix = new int*[n];    // n সাইজের 2D অ্যারে
+    for(int i = 0; i < n; i++) {
+        matrix[i] = new int[n];    // প্রতিটি row-এ n সাইজের অ্যারে
+    }
+    // মোট স্পেস: n * n = O(n²)
+    
+    // মেমরি ফ্রি
+    for(int i = 0; i < n; i++) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
+
+int main() {
+    int arr[] = {1, 2, 3};
+    printPairs(arr, 3);
+    quadraticSpace(3);
+    return 0;
+}
+```
+
+### উদাহরণ ৪: O(log n) - Logarithmic Time
+```cpp
+#include <iostream>
+using namespace std;
+
+// O(log n) Time Complexity - Binary Search
+int binarySearch(int arr[], int n, int target) {
+    int left = 0;
+    int right = n - 1;
+    
+    while(left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if(arr[mid] == target) {
+            return mid;
+        }
+        else if(arr[mid] < target) {
+            left = mid + 1;  // ডান দিকে যাওয়া
+        }
+        else {
+            right = mid - 1; // বাম দিকে যাওয়া
+        }
+    }
+    return -1;  // পাওয়া যায়নি
+}
+
+// O(log n) Space Complexity - Recursive Binary Search
+int recursiveBinarySearch(int arr[], int left, int right, int target) {
+    if(left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if(arr[mid] == target) return mid;
+        
+        if(arr[mid] > target) {
+            return recursiveBinarySearch(arr, left, mid - 1, target);
+        }
+        return recursiveBinarySearch(arr, mid + 1, right, target);
+    }
+    return -1;
+}
+
+int main() {
+    int sortedArr[] = {1, 3, 5, 7, 9, 11, 13, 15};
+    int n = 8;
+    int target = 7;
+    
+    int result = binarySearch(sortedArr, n, target);
+    if(result != -1) {
+        cout << "Found at index: " << result << endl;
+    } else {
+        cout << "Not found" << endl;
+    }
+    
+    return 0;
+}
+```
+
+### উদাহরণ ৫: O(n log n) - Linearithmic Time
+```cpp
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+// Merge Sort - O(n log n) Time Complexity
+void merge(int arr[], int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    // Temporary arrays
+    int* L = new int[n1];
+    int* R = new int[n2];
+    
+    // Copy data
+    for(int i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for(int j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+    
+    // Merge the arrays
+    int i = 0, j = 0, k = left;
+    while(i < n1 && j < n2) {
+        if(L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+    
+    // Copy remaining elements
+    while(i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    
+    while(j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+    
+    delete[] L;
+    delete[] R;
+}
+
+void mergeSort(int arr[], int left, int right) {
+    if(left < right) {
+        int mid = left + (right - left) / 2;
+        
+        mergeSort(arr, left, mid);      // O(log n) levels
+        mergeSort(arr, mid + 1, right); // O(log n) levels
+        merge(arr, left, mid, right);   // O(n) per level
+        
+        // মোট: O(n) * O(log n) = O(n log n)
+    }
+}
+
+int main() {
+    int arr[] = {12, 11, 13, 5, 6, 7};
+    int n = 6;
+    
+    cout << "Original array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    mergeSort(arr, 0, n - 1);
+    
+    cout << "Sorted array: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
+```
+
+## ৪. কমপ্লেক্সিটি অ্যানালাইসিস টেকনিক
+
+### লুপ অ্যানালাইসিস
+```cpp
+// O(n)
+for(int i = 0; i < n; i++) {
+    // constant time operations
+}
+
+// O(n²)
+for(int i = 0; i < n; i++) {
+    for(int j = 0; j < n; j++) {
+        // constant time operations
+    }
+}
+
+// O(n × m)
+for(int i = 0; i < n; i++) {
+    for(int j = 0; j < m; j++) {
+        // constant time operations
+    }
+}
+
+// O(log n)
+for(int i = 1; i < n; i *= 2) {
+    // constant time operations
+}
+```
+
+### রিকার্সিভ ফাংশন অ্যানালাইসিস
+```cpp
+// O(2^n) - Fibonacci (inefficient)
+int fibonacci(int n) {
+    if(n <= 1) return n;
+    return fibonacci(n-1) + fibonacci(n-2);
+}
+
+// O(n) - Fibonacci with memoization
+int fibMemo(int n, int memo[]) {
+    if(n <= 1) return n;
+    if(memo[n] != -1) return memo[n];
+    
+    memo[n] = fibMemo(n-1, memo) + fibMemo(n-2, memo);
+    return memo[n];
+}
+```
+
+## ৫. প্র্যাকটিক্যাল উদাহরণ
+
+### বিভিন্ন সর্টিং অ্যালগরিদমের কমপ্লেক্সিটি
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+// Bubble Sort - O(n²) Time, O(1) Space
+void bubbleSort(int arr[], int n) {
+    for(int i = 0; i < n-1; i++) {
+        for(int j = 0; j < n-i-1; j++) {
+            if(arr[j] > arr[j+1]) {
+                swap(arr[j], arr[j+1]);
+            }
+        }
+    }
+}
+
+// Selection Sort - O(n²) Time, O(1) Space
+void selectionSort(int arr[], int n) {
+    for(int i = 0; i < n-1; i++) {
+        int minIdx = i;
+        for(int j = i+1; j < n; j++) {
+            if(arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        swap(arr[i], arr[minIdx]);
+    }
+}
+
+// Using STL sort - O(n log n) average case
+void stlSort(int arr[], int n) {
+    sort(arr, arr + n);
+}
+
+int main() {
+    int arr1[] = {64, 34, 25, 12, 22, 11, 90};
+    int n = 7;
+    
+    bubbleSort(arr1, n);
+    cout << "Bubble Sorted: ";
+    for(int i = 0; i < n; i++) cout << arr1[i] << " ";
+    cout << endl;
+    
+    int arr2[] = {64, 34, 25, 12, 22, 11, 90};
+    selectionSort(arr2, n);
+    cout << "Selection Sorted: ";
+    for(int i = 0; i < n; i++) cout << arr2[i] << " ";
+    cout << endl;
+    
+    return 0;
+}
+```
+
+## ৬. কমপ্লেক্সিটি কম্প্যারিজন টেবিল
+
+| n | O(1) | O(log n) | O(n) | O(n log n) | O(n²) | O(2^n) |
+|---|------|----------|------|------------|-------|--------|
+| 10 | 1 | ~3 | 10 | ~30 | 100 | 1024 |
+| 100 | 1 | ~7 | 100 | ~700 | 10,000 | 1.26e+30 |
+| 1000 | 1 | ~10 | 1000 | ~10,000 | 1,000,000 | Very Large |
+
+## ৭. টিপস অ্যান্ড বেস্ট প্র্যাকটিস
+
+1. **সর্বদা Worst Case Consider করুন**
+2. **Constants Ignore করুন** - O(2n) = O(n)
+3. **Dominant Term নিন** - O(n² + n) = O(n²)
+4. **Multiple Variables থাকলে আলাদা রাখুন** - O(n × m)
+
+```cpp
+// Good practice examples
+void efficientCode(int n, int m) {
+    // O(n + m)
+    for(int i = 0; i < n; i++) {
+        // operation
+    }
+    for(int j = 0; j < m; j++) {
+        // operation
+    }
+    
+    // O(n × m)
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            // operation
+        }
+    }
+}
+```
+
+এই টিউটোরিয়ালটি আপনাকে টাইম ও স্পেস কমপ্লেক্সিটি বুঝতে এবং C++-এ ইমপ্লিমেন্ট করতে সাহায্য করবে। প্র্যাকটিস করতে বিভিন্ন অ্যালগরিদমের কমপ্লেক্সিটি অ্যানালাইসিস করুন!
