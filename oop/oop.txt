@@ -1,0 +1,642 @@
+# অবজেক্ট ওরিয়েন্টেড প্রোগ্রামিং (OOP) - সম্পূর্ণ ধারণা এবং C++ ব্যবহার করে
+
+## OOP কি? (What is OOP?)
+**অবজেক্ট ওরিয়েন্টেড প্রোগ্রামিং** একটি প্রোগ্রামিং প্যারাডাইম যেখানে প্রোগ্রামকে অবজেক্টের সংগ্রহ হিসেবে দেখা হয়। প্রতিটি অবজেক্ট ডাটা এবং ফাংশন (মেথড) ধারণ করে।
+
+## OOP এর মূল চারটি স্তম্ভ (Four Pillars of OOP)
+
+### ১. এনক্যাপসুলেশন (Encapsulation)
+ডাটা এবং মেথডকে একটি ইউনিটে বন্ধন করা। ডাটা গোপন রাখা এবং শুধুমাত্র নির্দিষ্ট মেথডের মাধ্যমে এক্সেস দেওয়া।
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class BankAccount {
+private: // ডাটা গোপন (encapsulated)
+    string accountHolder;
+    double balance;
+    string accountNumber;
+
+public: // পাবলিক ইন্টারফেস
+    // কনস্ট্রাক্টর
+    BankAccount(string holder, string accNum, double initialBalance) {
+        accountHolder = holder;
+        accountNumber = accNum;
+        balance = initialBalance;
+    }
+
+    // গেটার মেথড
+    double getBalance() {
+        return balance;
+    }
+
+    string getAccountHolder() {
+        return accountHolder;
+    }
+
+    // সেটার মেথড
+    void deposit(double amount) {
+        if(amount > 0) {
+            balance += amount;
+            cout << amount << " টাকা জমা দেওয়া হয়েছে। নতুন ব্যালেন্স: " << balance << endl;
+        }
+    }
+
+    void withdraw(double amount) {
+        if(amount > 0 && amount <= balance) {
+            balance -= amount;
+            cout << amount << " টাকা উত্তোলন করা হয়েছে। নতুন ব্যালেন্স: " << balance << endl;
+        } else {
+            cout << "অপর্যাপ্ত ব্যালেন্স!" << endl;
+        }
+    }
+
+    void displayInfo() {
+        cout << "অ্যাকাউন্ট হোল্ডার: " << accountHolder << endl;
+        cout << "অ্যাকাউন্ট নম্বর: " << accountNumber << endl;
+        cout << "বর্তমান ব্যালেন্স: " << balance << " টাকা" << endl;
+    }
+};
+
+int main() {
+    BankAccount account1("রহিম করিম", "123456789", 5000.0);
+    
+    account1.displayInfo();
+    account1.deposit(2000);
+    account1.withdraw(1000);
+    account1.withdraw(10000); // অপর্যাপ্ত ব্যালেন্স
+    
+    return 0;
+}
+```
+
+### ২. ইনহেরিটেন্স (Inheritance)
+একটি ক্লাস অন্য ক্লাস থেকে বৈশিষ্ট্য উত্তরাধিকার সূত্রে পাওয়া।
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+// বেস ক্লাস (Base Class)
+class Animal {
+protected:
+    string name;
+    int age;
+
+public:
+    Animal(string n, int a) : name(n), age(a) {}
+
+    void eat() {
+        cout << name << " খাবার খাচ্ছে..." << endl;
+    }
+
+    void sleep() {
+        cout << name << " ঘুমাচ্ছে..." << endl;
+    }
+
+    virtual void makeSound() { // ভার্চুয়াল ফাংশন
+        cout << "প্রাণীটি শব্দ করছে!" << endl;
+    }
+
+    void displayInfo() {
+        cout << "নাম: " << name << ", বয়স: " << age << " বছর" << endl;
+    }
+};
+
+// ডেরাইভড ক্লাস (Derived Class)
+class Dog : public Animal {
+private:
+    string breed;
+
+public:
+    Dog(string n, int a, string b) : Animal(n, a), breed(b) {}
+
+    void makeSound() override {
+        cout << name << " হাঁপাচ্ছে: হাউ হাউ!" << endl;
+    }
+
+    void fetch() {
+        cout << name << " বল নিয়ে আসছে..." << endl;
+    }
+
+    void displayDogInfo() {
+        displayInfo();
+        cout << "প্রজাতি: " << breed << endl;
+    }
+};
+
+class Cat : public Animal {
+private:
+    string color;
+
+public:
+    Cat(string n, int a, string c) : Animal(n, a), color(c) {}
+
+    void makeSound() override {
+        cout << name << " মিউ মিউ করছে!" << endl;
+    }
+
+    void climbTree() {
+        cout << name << " গাছে উঠছে..." << endl;
+    }
+
+    void displayCatInfo() {
+        displayInfo();
+        cout << "রং: " << color << endl;
+    }
+};
+
+int main() {
+    Dog myDog("বাডি", 3, "ল্যাব্রাডর");
+    Cat myCat("মিমি", 2, "সাদা");
+
+    cout << "কুকুরের তথ্য:" << endl;
+    myDog.displayDogInfo();
+    myDog.makeSound();
+    myDog.eat();
+    myDog.fetch();
+
+    cout << "\nবেড়ালের তথ্য:" << endl;
+    myCat.displayCatInfo();
+    myCat.makeSound();
+    myCat.sleep();
+    myCat.climbTree();
+
+    return 0;
+}
+```
+
+### ৩. পলিমরফিজম (Polymorphism)
+একই নামের মেথড বিভিন্ন ক্লাসে বিভিন্নভাবে কাজ করা।
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// বেস ক্লাস
+class Shape {
+protected:
+    string name;
+
+public:
+    Shape(string n) : name(n) {}
+
+    virtual double calculateArea() {
+        return 0.0;
+    }
+
+    virtual void display() {
+        cout << "আকৃতি: " << name << endl;
+    }
+
+    virtual ~Shape() {} // ভার্চুয়াল ডেস্ট্রাক্টর
+};
+
+// ডেরাইভড ক্লাস - বৃত্ত
+class Circle : public Shape {
+private:
+    double radius;
+
+public:
+    Circle(double r) : Shape("বৃত্ত"), radius(r) {}
+
+    double calculateArea() override {
+        return 3.1416 * radius * radius;
+    }
+
+    void display() override {
+        Shape::display();
+        cout << "ব্যাসার্ধ: " << radius << endl;
+        cout << "ক্ষেত্রফল: " << calculateArea() << endl;
+    }
+};
+
+// ডেরাইভড ক্লাস - আয়তক্ষেত্র
+class Rectangle : public Shape {
+private:
+    double length, width;
+
+public:
+    Rectangle(double l, double w) : Shape("আয়তক্ষেত্র"), length(l), width(w) {}
+
+    double calculateArea() override {
+        return length * width;
+    }
+
+    void display() override {
+        Shape::display();
+        cout << "দৈর্ঘ্য: " << length << ", প্রস্থ: " << width << endl;
+        cout << "ক্ষেত্রফল: " << calculateArea() << endl;
+    }
+};
+
+// ডেরাইভড ক্লাস - ত্রিভুজ
+class Triangle : public Shape {
+private:
+    double base, height;
+
+public:
+    Triangle(double b, double h) : Shape("ত্রিভুজ"), base(b), height(h) {}
+
+    double calculateArea() override {
+        return 0.5 * base * height;
+    }
+
+    void display() override {
+        Shape::display();
+        cout << "ভূমি: " << base << ", উচ্চতা: " << height << endl;
+        cout << "ক্ষেত্রফল: " << calculateArea() << endl;
+    }
+};
+
+int main() {
+    vector<Shape*> shapes;
+
+    shapes.push_back(new Circle(5.0));
+    shapes.push_back(new Rectangle(4.0, 6.0));
+    shapes.push_back(new Triangle(3.0, 4.0));
+
+    cout << "বিভিন্ন আকৃতির ক্ষেত্রফল:" << endl;
+    cout << "=========================" << endl;
+
+    for(Shape* shape : shapes) {
+        shape->display();
+        cout << "-------------------------" << endl;
+    }
+
+    // মেমরি ক্লিনআপ
+    for(Shape* shape : shapes) {
+        delete shape;
+    }
+
+    return 0;
+}
+```
+
+### ৪. অ্যাবস্ট্রাকশন (Abstraction)
+জটিলতা লুকানো এবং শুধুমাত্র প্রয়োজনীয় ডিটেইলস দেখানো।
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+// অ্যাবস্ট্রাক্ট ক্লাস
+class Vehicle {
+protected:
+    string brand;
+    string model;
+    int year;
+
+public:
+    Vehicle(string b, string m, int y) : brand(b), model(m), year(y) {}
+
+    // বিশুদ্ধ ভার্চুয়াল ফাংশন - অ্যাবস্ট্রাক্ট ক্লাস বানায়
+    virtual void start() = 0;
+    virtual void stop() = 0;
+    virtual void displayInfo() = 0;
+
+    virtual ~Vehicle() {}
+};
+
+class Car : public Vehicle {
+private:
+    int doors;
+
+public:
+    Car(string b, string m, int y, int d) : Vehicle(b, m, y), doors(d) {}
+
+    void start() override {
+        cout << brand << " " << model << " কার ইঞ্জিন চালু হচ্ছে... ভ্রাম ভ্রাম!" << endl;
+    }
+
+    void stop() override {
+        cout << brand << " " << model << " কার ইঞ্জিন বন্ধ হচ্ছে..." << endl;
+    }
+
+    void displayInfo() override {
+        cout << "গাড়ির তথ্য:" << endl;
+        cout << "ব্র্যান্ড: " << brand << endl;
+        cout << "মডেল: " << model << endl;
+        cout << "বছর: " << year << endl;
+        cout << "দরজা সংখ্যা: " << doors << endl;
+    }
+
+    void honk() {
+        cout << "হর্ণ বাজছে: বীপ বীপ!" << endl;
+    }
+};
+
+class Motorcycle : public Vehicle {
+private:
+    string type;
+
+public:
+    Motorcycle(string b, string m, int y, string t) : Vehicle(b, m, y), type(t) {}
+
+    void start() override {
+        cout << brand << " " << model << " মোটরসাইকেল চালু হচ্ছে... ভ্রাম ভ্রাম ভ্রাম!" << endl;
+    }
+
+    void stop() override {
+        cout << brand << " " << model << " মোটরসাইকেল বন্ধ হচ্ছে..." << endl;
+    }
+
+    void displayInfo() override {
+        cout << "মোটরসাইকেলের তথ্য:" << endl;
+        cout << "ব্র্যান্ড: " << brand << endl;
+        cout << "মডেল: " << model << endl;
+        cout << "বছর: " << year << endl;
+        cout << "ধরণ: " << type << endl;
+    }
+
+    void wheelie() {
+        cout << "মোটরসাইকেলটি হুইলি করছে!" << endl;
+    }
+};
+
+int main() {
+    // Vehicle v; // এরর! অ্যাবস্ট্রাক্ট ক্লাসের অবজেক্ট তৈরি করা যায় না
+    
+    Car myCar("Toyota", "Corolla", 2022, 4);
+    Motorcycle myBike("Yamaha", "R15", 2023, "Sports");
+
+    cout << "গাড়ির অপারেশন:" << endl;
+    myCar.displayInfo();
+    myCar.start();
+    myCar.honk();
+    myCar.stop();
+
+    cout << "\nমোটরসাইকেলের অপারেশন:" << endl;
+    myBike.displayInfo();
+    myBike.start();
+    myBike.wheelie();
+    myBike.stop();
+
+    return 0;
+}
+```
+
+## কনস্ট্রাক্টর এবং ডেস্ট্রাক্টর (Constructors and Destructors)
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Student {
+private:
+    string name;
+    int id;
+    double cgpa;
+    static int totalStudents; // স্ট্যাটিক মেম্বার
+
+public:
+    // ডিফল্ট কনস্ট্রাক্টর
+    Student() {
+        name = "অজানা";
+        id = 0;
+        cgpa = 0.0;
+        totalStudents++;
+        cout << "ডিফল্ট কনস্ট্রাক্টর কল হয়েছে" << endl;
+    }
+
+    // প্যারামিটারাইজড কনস্ট্রাক্টর
+    Student(string n, int i, double c) {
+        name = n;
+        id = i;
+        cgpa = c;
+        totalStudents++;
+        cout << "প্যারামিটারাইজড কনস্ট্রাক্টর কল হয়েছে" << endl;
+    }
+
+    // কপি কনস্ট্রাক্টর
+    Student(const Student &other) {
+        name = other.name;
+        id = other.id;
+        cgpa = other.cgpa;
+        totalStudents++;
+        cout << "কপি কনস্ট্রাক্টর কল হয়েছে" << endl;
+    }
+
+    // ডেস্ট্রাক্টর
+    ~Student() {
+        totalStudents--;
+        cout << "ডেস্ট্রাক্টর কল হয়েছে: " << name << endl;
+    }
+
+    void displayInfo() {
+        cout << "নাম: " << name << endl;
+        cout << "আইডি: " << id << endl;
+        cout << "CGPA: " << cgpa << endl;
+    }
+
+    // স্ট্যাটিক মেথড
+    static int getTotalStudents() {
+        return totalStudents;
+    }
+
+    // ফ্রেন্ড ফাংশন
+    friend void updateCGPA(Student &s, double newCGPA);
+};
+
+// স্ট্যাটিক মেম্বার ইনিশিয়ালাইজেশন
+int Student::totalStudents = 0;
+
+// ফ্রেন্ড ফাংশন ডেফিনিশন
+void updateCGPA(Student &s, double newCGPA) {
+    s.cgpa = newCGPA;
+    cout << s.name << " এর CGPA আপডেট হয়েছে: " << s.cgpa << endl;
+}
+
+int main() {
+    cout << "স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম" << endl;
+    cout << "==============================" << endl;
+
+    Student s1; // ডিফল্ট কনস্ট্রাক্টর
+    Student s2("আনিকা", 101, 3.75); // প্যারামিটারাইজড কনস্ট্রাক্টর
+    Student s3 = s2; // কপি কনস্ট্রাক্টর
+
+    cout << "\nস্টুডেন্ট ১:" << endl;
+    s1.displayInfo();
+
+    cout << "\nস্টুডেন্ট ২:" << endl;
+    s2.displayInfo();
+
+    cout << "\nস্টুডেন্ট ৩ (কপি):" << endl;
+    s3.displayInfo();
+
+    // ফ্রেন্ড ফাংশন ব্যবহার
+    updateCGPA(s1, 3.25);
+
+    cout << "\nমোট স্টুডেন্ট সংখ্যা: " << Student::getTotalStudents() << endl;
+
+    {
+        Student s4("রাজু", 104, 3.90);
+        cout << "ব্লকের ভিতরে মোট স্টুডেন্ট: " << Student::getTotalStudents() << endl;
+    } // s4 ডেস্ট্রাক্টর কল হবে
+
+    cout << "ব্লকের বাইরে মোট স্টুডেন্ট: " << Student::getTotalStudents() << endl;
+
+    return 0;
+} // এখানে সব অবজেক্টের ডেস্ট্রাক্টর কল হবে
+```
+
+## অপারেটর ওভারলোডিং (Operator Overloading)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Complex {
+private:
+    double real;
+    double imag;
+
+public:
+    Complex(double r = 0, double i = 0) : real(r), imag(i) {}
+
+    // অপারেটর ওভারলোডিং (+)
+    Complex operator + (const Complex &other) {
+        return Complex(real + other.real, imag + other.imag);
+    }
+
+    // অপারেটর ওভারলোডিং (-)
+    Complex operator - (const Complex &other) {
+        return Complex(real - other.real, imag - other.imag);
+    }
+
+    // অপারেটর ওভারলোডিং (*)
+    Complex operator * (const Complex &other) {
+        return Complex(real * other.real - imag * other.imag,
+                      real * other.imag + imag * other.real);
+    }
+
+    // অপারেটর ওভারলোডিং (==)
+    bool operator == (const Complex &other) {
+        return (real == other.real && imag == other.imag);
+    }
+
+    // ফ্রেন্ড ফাংশন অপারেটর ওভারলোডিং (<<)
+    friend ostream& operator << (ostream &out, const Complex &c);
+
+    void display() {
+        cout << real << " + " << imag << "i" << endl;
+    }
+};
+
+// ফ্রেন্ড ফাংশন ডেফিনিশন
+ostream& operator << (ostream &out, const Complex &c) {
+    out << c.real << " + " << c.imag << "i";
+    return out;
+}
+
+int main() {
+    Complex c1(3.0, 4.0);
+    Complex c2(1.0, 2.0);
+
+    cout << "কমপ্লেক্স সংখ্যা ১: " << c1 << endl;
+    cout << "কমপ্লেক্স সংখ্যা ২: " << c2 << endl;
+
+    Complex sum = c1 + c2;
+    Complex diff = c1 - c2;
+    Complex product = c1 * c2;
+
+    cout << "\nযোগফল: " << sum << endl;
+    cout << "বিয়োগফল: " << diff << endl;
+    cout << "গুণফল: " << product << endl;
+
+    if(c1 == c2) {
+        cout << "দুটি সংখ্যা সমান" << endl;
+    } else {
+        cout << "দুটি সংখ্যা অসমান" << endl;
+    }
+
+    return 0;
+}
+```
+
+## টেমপ্লেট ক্লাস (Template Class)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// টেমপ্লেট ক্লাস
+template <typename T>
+class Calculator {
+private:
+    T num1, num2;
+
+public:
+    Calculator(T n1, T n2) : num1(n1), num2(n2) {}
+
+    T add() {
+        return num1 + num2;
+    }
+
+    T subtract() {
+        return num1 - num2;
+    }
+
+    T multiply() {
+        return num1 * num2;
+    }
+
+    T divide() {
+        if(num2 != 0) {
+            return num1 / num2;
+        } else {
+            cout << "শূন্য দিয়ে ভাগ করা যায় না!" << endl;
+            return 0;
+        }
+    }
+
+    void displayResults() {
+        cout << "সংখ্যা ১: " << num1 << ", সংখ্যা ২: " << num2 << endl;
+        cout << "যোগফল: " << add() << endl;
+        cout << "বিয়োগফল: " << subtract() << endl;
+        cout << "গুণফল: " << multiply() << endl;
+        cout << "ভাগফল: " << divide() << endl;
+    }
+};
+
+int main() {
+    cout << "ইন্টিজার ক্যালকুলেটর:" << endl;
+    Calculator<int> intCalc(10, 5);
+    intCalc.displayResults();
+
+    cout << "\nফ্লোট ক্যালকুলেটর:" << endl;
+    Calculator<float> floatCalc(12.5, 2.5);
+    floatCalc.displayResults();
+
+    cout << "\nডাবল ক্যালকুলেটর:" << endl;
+    Calculator<double> doubleCalc(15.75, 3.25);
+    doubleCalc.displayResults();
+
+    return 0;
+}
+```
+
+## OOP এর সুবিধা (Advantages of OOP)
+
+1. **পুনঃব্যবহারযোগ্যতা (Reusability)**: ইনহেরিটেন্সের মাধ্যমে কোড পুনরায় ব্যবহার করা যায়
+2. **রক্ষণাবেক্ষণ (Maintainability)**: কোড সহজে মেইনটেন করা যায়
+3. **স্কেলেবিলিটি (Scalability)**: বড় প্রজেক্টে কাজ করা সহজ
+4. **ডাটা সিকিউরিটি (Data Security)**: এনক্যাপসুলেশন ডাটা সুরক্ষিত রাখে
+5. **রিয়েল ওয়ার্ল্ড মডেলিং (Real-world Modeling)**: বাস্তব জগতের মতো করে প্রোগ্রাম ডিজাইন করা যায়
+
+## OOP এর প্রয়োগ (Applications of OOP)
+
+1. **গ্রাফিক্যাল ইউজার ইন্টারফেস (GUI)**
+2. **ডাটাবেস ম্যানেজমেন্ট সিস্টেম**
+3. **গেম ডেভেলপমেন্ট**
+4. **ওয়েব ডেভেলপমেন্ট**
+5. **সিমুলেশন সফটওয়্যার**
+6. **আর্টিফিশিয়াল ইন্টেলিজেন্স**
+
+এই সম্পূর্ণ গাইডটি OOP এর সমস্ত গুরুত্বপূর্ণ ধারণা C++ ব্যবহার করে বাংলায় ব্যাখ্যা করেছে। প্রতিটি টপিকের সাথে প্র্যাকটিক্যাল কোড উদাহরণ দেওয়া হয়েছে যা আপনার বুঝতে সাহায্য করবে।

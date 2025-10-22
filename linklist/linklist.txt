@@ -1,0 +1,545 @@
+# লিংকড লিস্ট - সম্পূর্ণ গাইড (বাংলায়)
+
+## লিংকড লিস্ট কি?
+
+**লিংকড লিস্ট** একটি লিনিয়ার ডাটা স্ট্রাকচার যেখানে এলিমেন্টগুলো একটার পর একটা সাজানো থাকে, কিন্তু মেমোরিতে তারা কন্টিগিউয়াসভাবে থাকে না। 
+
+### অ্যারে vs লিংকড লিস্ট:
+
+| অ্যারে | লিংকড লিস্ট |
+|--------|-------------|
+| মেমোরিতে কন্টিগিউয়াসভাবে থাকে | মেমোরিতে ছড়িয়ে ছিটিয়ে থাকে |
+| ফিক্সড সাইজ | ডায়নামিক সাইজ |
+| র্যান্ডম অ্যাক্সেস 가능 | সিকুয়েনশিয়াল অ্যাক্সেস |
+| ইনসার্ট/ডিলিট স্লো | ইনসার্ট/ডিলিট ফাস্ট |
+
+## লিংকড লিস্ট কিভাবে কাজ করে?
+
+### বেসিক কনসেপ্ট:
+```
+নোড 1        নোড 2        নোড 3
+[Data|Next] -> [Data|Next] -> [Data|Next] -> NULL
+```
+
+**প্রতিটি নোডে:**
+- **ডাটা**: প্রকৃত ভ্যালু (int, string, etc.)
+- **নেক্সট পয়েন্টার**: পরবর্তী নোডের মেমোরি অ্যাড্রেস
+
+## লিংকড লিস্টের প্রকারভেদ
+
+### ১. সিঙ্গলি লিংকড লিস্ট
+```cpp
+#include <iostream>
+using namespace std;
+
+// নোড স্ট্রাকচার
+class Node {
+public:
+    int data;       // ডাটা রাখে
+    Node* next;     // পরবর্তী নোডের পয়েন্টার
+    
+    // কনস্ট্রাক্টর
+    Node(int value) {
+        data = value;
+        next = nullptr;  // শুরুতে nullptr
+    }
+};
+
+// লিংকড লিস্ট ক্লাস
+class LinkedList {
+private:
+    Node* head;     // প্রথম নোডের পয়েন্টার
+    
+public:
+    // কনস্ট্রাক্টর
+    LinkedList() {
+        head = nullptr;  // শুরুতে লিস্ট খালি
+    }
+    
+    // ডেস্ট্রাক্টর - মেমোরি ক্লিনআপ
+    ~LinkedList() {
+        Node* current = head;
+        while (current != nullptr) {
+            Node* next = current->next;
+            delete current;
+            current = next;
+        }
+    }
+    
+    // লিস্ট খালি কিনা চেক
+    bool isEmpty() {
+        return head == nullptr;
+    }
+    
+    // ১. শুরুতে নোড যোগ করা
+    void insertAtBeginning(int value) {
+        // নতুন নোড তৈরি
+        Node* newNode = new Node(value);
+        
+        // নতুন নোডের Next指向目前的Head
+        newNode->next = head;
+        
+        // Head指向新节点
+        head = newNode;
+        
+        cout << value << " inserted at beginning." << endl;
+    }
+    
+    // ২. শেষে নোড যোগ করা
+    void insertAtEnd(int value) {
+        Node* newNode = new Node(value);
+        
+        // যদি লিস্ট খালি থাকে
+        if (head == nullptr) {
+            head = newNode;
+            cout << value << " inserted at end." << endl;
+            return;
+        }
+        
+        // শেষ নোড পর্যন্ত যাওয়া
+        Node* temp = head;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        
+        // শেষ নোডের Next指向新节点
+        temp->next = newNode;
+        
+        cout << value << " inserted at end." << endl;
+    }
+    
+    // ৩. নির্দিষ্ট পজিশনে নোড যোগ করা
+    void insertAtPosition(int value, int position) {
+        if (position < 0) {
+            cout << "Invalid position!" << endl;
+            return;
+        }
+        
+        // যদি পজিশন 0 হয় (শুরুতে)
+        if (position == 0) {
+            insertAtBeginning(value);
+            return;
+        }
+        
+        Node* newNode = new Node(value);
+        Node* temp = head;
+        
+        // (position-1) নম্বর নোডে যাওয়া
+        for (int i = 0; i < position - 1 && temp != nullptr; i++) {
+            temp = temp->next;
+        }
+        
+        // যদি পজিশন লিস্টের সাইজের চেয়ে বড় হয়
+        if (temp == nullptr) {
+            cout << "Position out of range!" << endl;
+            delete newNode;
+            return;
+        }
+        
+        // নতুন নোড সংযোগ করা
+        newNode->next = temp->next;
+        temp->next = newNode;
+        
+        cout << value << " inserted at position " << position << endl;
+    }
+    
+    // ৪. নোড ডিলিট করা (ভ্যালু দিয়ে)
+    void deleteNode(int value) {
+        if (head == nullptr) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        
+        // যদি প্রথম নোড ডিলিট করতে হয়
+        if (head->data == value) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+            cout << value << " deleted from list." << endl;
+            return;
+        }
+        
+        Node* temp = head;
+        
+        // ডিলিট করতে হবে এমন নোডের আগের নোড খুঁজে বের করা
+        while (temp->next != nullptr && temp->next->data != value) {
+            temp = temp->next;
+        }
+        
+        // ভ্যালু না পাওয়া গেলে
+        if (temp->next == nullptr) {
+            cout << "Value " << value << " not found in list!" << endl;
+            return;
+        }
+        
+        // নোড ডিলিট করা
+        Node* nodeToDelete = temp->next;
+        temp->next = temp->next->next;
+        delete nodeToDelete;
+        
+        cout << value << " deleted from list." << endl;
+    }
+    
+    // ৫. সার্চ করা
+    bool search(int value) {
+        Node* temp = head;
+        int position = 0;
+        
+        while (temp != nullptr) {
+            if (temp->data == value) {
+                cout << value << " found at position " << position << endl;
+                return true;
+            }
+            temp = temp->next;
+            position++;
+        }
+        
+        cout << value << " not found in list!" << endl;
+        return false;
+    }
+    
+    // ৬. লিস্ট ডিসপ্লে করা
+    void display() {
+        if (head == nullptr) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        
+        Node* temp = head;
+        cout << "Linked List: ";
+        while (temp != nullptr) {
+            cout << temp->data;
+            if (temp->next != nullptr) {
+                cout << " -> ";
+            }
+            temp = temp->next;
+        }
+        cout << " -> NULL" << endl;
+    }
+    
+    // ৭. লিস্টের সাইজ
+    int size() {
+        int count = 0;
+        Node* temp = head;
+        
+        while (temp != nullptr) {
+            count++;
+            temp = temp->next;
+        }
+        
+        return count;
+    }
+    
+    // ৮. লিস্ট রিভার্স করা
+    void reverse() {
+        Node* prev = nullptr;
+        Node* current = head;
+        Node* next = nullptr;
+        
+        while (current != nullptr) {
+            next = current->next;  // Store next node
+            current->next = prev;  // Reverse link
+            prev = current;        // Move prev forward
+            current = next;        // Move current forward
+        }
+        
+        head = prev;  // Update head
+        cout << "List reversed." << endl;
+    }
+};
+
+// মেইন ফাংশন - টেস্টিং
+int main() {
+    LinkedList list;
+    
+    cout << "=== সিঙ্গলি লিংকড লিস্ট ডেমো ===" << endl;
+    
+    // শুরুতে নোড যোগ
+    list.insertAtBeginning(30);
+    list.insertAtBeginning(20);
+    list.insertAtBeginning(10);
+    list.display();
+    
+    // শেষে নোড যোগ
+    list.insertAtEnd(40);
+    list.insertAtEnd(50);
+    list.display();
+    
+    // নির্দিষ্ট পজিশনে যোগ
+    list.insertAtPosition(25, 2);
+    list.insertAtPosition(35, 5);
+    list.display();
+    
+    // সার্চ টেস্ট
+    list.search(25);
+    list.search(100);
+    
+    // সাইজ চেক
+    cout << "List size: " << list.size() << endl;
+    
+    // ডিলিট টেস্ট
+    list.deleteNode(25);
+    list.display();
+    
+    list.deleteNode(10);  // প্রথম নোড
+    list.display();
+    
+    list.deleteNode(50);  // শেষ নোড
+    list.display();
+    
+    // রিভার্স টেস্ট
+    cout << "Before reverse: ";
+    list.display();
+    
+    list.reverse();
+    cout << "After reverse: ";
+    list.display();
+    
+    return 0;
+}
+```
+
+### আউটপুট:
+```
+=== সিঙ্গলি লিংকড লিস্ট ডেমো ===
+10 inserted at beginning.
+20 inserted at beginning.
+30 inserted at beginning.
+Linked List: 30 -> 20 -> 10 -> NULL
+40 inserted at end.
+50 inserted at end.
+Linked List: 30 -> 20 -> 10 -> 40 -> 50 -> NULL
+25 inserted at position 2
+35 inserted at position 5
+Linked List: 30 -> 20 -> 25 -> 10 -> 40 -> 35 -> 50 -> NULL
+25 found at position 2
+100 not found in list!
+List size: 7
+25 deleted from list.
+Linked List: 30 -> 20 -> 10 -> 40 -> 35 -> 50 -> NULL
+10 deleted from list.
+Linked List: 30 -> 20 -> 40 -> 35 -> 50 -> NULL
+50 deleted from list.
+Linked List: 30 -> 20 -> 40 -> 35 -> NULL
+Before reverse: Linked List: 30 -> 20 -> 40 -> 35 -> NULL
+List reversed.
+After reverse: Linked List: 35 -> 40 -> 20 -> 30 -> NULL
+```
+
+## ২. ডাবলি লিংকড লিস্ট
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class DoubleNode {
+public:
+    int data;
+    DoubleNode* next;
+    DoubleNode* prev;
+    
+    DoubleNode(int value) {
+        data = value;
+        next = nullptr;
+        prev = nullptr;
+    }
+};
+
+class DoublyLinkedList {
+private:
+    DoubleNode* head;
+    DoubleNode* tail;
+    
+public:
+    DoublyLinkedList() {
+        head = nullptr;
+        tail = nullptr;
+    }
+    
+    ~DoublyLinkedList() {
+        DoubleNode* current = head;
+        while (current != nullptr) {
+            DoubleNode* next = current->next;
+            delete current;
+            current = next;
+        }
+    }
+    
+    // সামনে যোগ করা
+    void insertAtFront(int value) {
+        DoubleNode* newNode = new DoubleNode(value);
+        
+        if (head == nullptr) {
+            head = tail = newNode;
+        } else {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+        cout << value << " inserted at front." << endl;
+    }
+    
+    // শেষে যোগ করা
+    void insertAtEnd(int value) {
+        DoubleNode* newNode = new DoubleNode(value);
+        
+        if (tail == nullptr) {
+            head = tail = newNode;
+        } else {
+            tail->next = newNode;
+            newNode->prev = tail;
+            tail = newNode;
+        }
+        cout << value << " inserted at end." << endl;
+    }
+    
+    // সামনে থেকে ডিলিট
+    void deleteFromFront() {
+        if (head == nullptr) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        
+        DoubleNode* temp = head;
+        head = head->next;
+        
+        if (head != nullptr) {
+            head->prev = nullptr;
+        } else {
+            tail = nullptr;
+        }
+        
+        cout << temp->data << " deleted from front." << endl;
+        delete temp;
+    }
+    
+    // শেষ থেকে ডিলিট
+    void deleteFromEnd() {
+        if (tail == nullptr) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        
+        DoubleNode* temp = tail;
+        tail = tail->prev;
+        
+        if (tail != nullptr) {
+            tail->next = nullptr;
+        } else {
+            head = nullptr;
+        }
+        
+        cout << temp->data << " deleted from end." << endl;
+        delete temp;
+    }
+    
+    // সামনে থেকে ডিসপ্লে
+    void displayForward() {
+        if (head == nullptr) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        
+        DoubleNode* temp = head;
+        cout << "Forward: ";
+        while (temp != nullptr) {
+            cout << temp->data;
+            if (temp->next != nullptr) {
+                cout << " <-> ";
+            }
+            temp = temp->next;
+        }
+        cout << " -> NULL" << endl;
+    }
+    
+    // পিছন থেকে ডিসপ্লে
+    void displayBackward() {
+        if (tail == nullptr) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        
+        DoubleNode* temp = tail;
+        cout << "Backward: ";
+        while (temp != nullptr) {
+            cout << temp->data;
+            if (temp->prev != nullptr) {
+                cout << " <-> ";
+            }
+            temp = temp->prev;
+        }
+        cout << " -> NULL" << endl;
+    }
+};
+
+// ডাবলি লিংকড লিস্ট টেস্ট
+void testDoublyLinkedList() {
+    cout << "\n=== ডাবলি লিংকড লিস্ট ডেমো ===" << endl;
+    
+    DoublyLinkedList dll;
+    
+    dll.insertAtEnd(10);
+    dll.insertAtEnd(20);
+    dll.insertAtFront(5);
+    dll.insertAtEnd(30);
+    
+    dll.displayForward();
+    dll.displayBackward();
+    
+    dll.deleteFromFront();
+    dll.displayForward();
+    
+    dll.deleteFromEnd();
+    dll.displayForward();
+}
+
+int main() {
+    // সিঙ্গলি লিংকড লিস্ট টেস্ট
+    LinkedList list;
+    
+    cout << "=== সিঙ্গলি লিংকড লিস্ট ডেমো ===" << endl;
+    list.insertAtEnd(10);
+    list.insertAtEnd(20);
+    list.insertAtBeginning(5);
+    list.display();
+    
+    // ডাবলি লিংকড লিস্ট টেস্ট
+    testDoublyLinkedList();
+    
+    return 0;
+}
+```
+
+## টাইম কমপ্লেক্সিটি
+
+| অপারেশন | সিঙ্গলি লিংকড লিস্ট | ডাবলি লিংকড লিস্ট |
+|----------|---------------------|-------------------|
+| ইনসার্ট (শুরুতে) | O(1) | O(1) |
+| ইনসার্ট (শেষে) | O(n) | O(1) |
+| ইনসার্ট (মাঝে) | O(n) | O(n) |
+| ডিলিট (শুরুতে) | O(1) | O(1) |
+| ডিলিট (শেষে) | O(n) | O(1) |
+| সার্চ | O(n) | O(n) |
+| ট্রাভার্স | O(n) | O(n) |
+
+## রিয়েল-লাইফ ইউজ কেস
+
+1. **মিউজিক প্লেয়ার**: গানগুলোর লিস্ট
+2. **ব্রাউজার হিস্টরি**: আগে-পিছে নেভিগেশন
+3. **আন্ডো/রিডো**: সফটওয়্যার ফিচার
+4. **টাস্ক ম্যানেজমেন্ট**: টু-ডু লিস্ট
+5. **মেমোরি ম্যানেজমেন্ট**: অপারেটিং সিস্টেম
+
+## এডভান্টেজ এবং ডিসএডভান্টেজ
+
+### এডভান্টেজ:
+- ✅ ডায়নামিক সাইজ
+- ✅ ইফিসিয়েন্ট ইনসার্ট/ডিলিট
+- ✅ নো মেমোরি waste
+
+### ডিসএডভান্টেজ:
+- ❌ এক্সট্রা মেমোরি (পয়েন্টারের জন্য)
+- ❌ নো র্যান্ডম অ্যাক্সেস
+- ❌ রিভার্স ট্রাভার্সাল কষ্টকর (সিঙ্গলি)
+
+এই গাইডটি লিংকড লিস্টের সম্পূর্ণ কনসেপ্ট কভার করে। প্র্যাকটিসের জন্য উপরের কোডগুলো নিজে রান করে দেখুন এবং বিভিন্ন মেথড যোগ করে এক্সপেরিমেন্ট করুন!
