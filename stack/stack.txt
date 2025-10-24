@@ -1,0 +1,311 @@
+# স্ট্যাক (Stack) ডাটা স্ট্রাকচার - বিস্তারিত ব্যাখ্যা ও রিয়েল-লাইফ উদাহরণ
+
+## স্ট্যাক কি? (What is Stack?)
+
+**স্ট্যাক** একটি লিনিয়ার ডাটা স্ট্রাকচার যা **LIFO (Last In First Out)** নীতিতে কাজ করে। অর্থাৎ, সর্বশেষ যে আইটেমটি স্ট্যাকে যোগ করা হয়, সেটিই সর্বপ্রথম বের হয়ে আসে।
+
+### স্ট্যাকের মূল অপারেশনগুলো:
+
+1. **পUSH (যোগ করা)**
+2. **POP (বাদ দেওয়া)**
+3. **PEEK/TOP (শীর্ষ элемент দেখা)**
+4. **isEmpty (খালি কি না চেক করা)**
+
+## রিয়েল-লাইফ উদাহরণ (Real Life Examples)
+
+### ১. প্লেটের স্ট্যাক (Stack of Plates)
+```bash
+প্লেট সাজানোর সময়:
+- নতুন প্লেট উপরে রাখি → PUSH
+- প্লেট ব্যবহার করি উপর থেকে → POP
+- কোন প্লেটটি নেবো? সর্বোপরেরটি → PEEK
+```
+
+### ২. ব্রেডের টোস্ট (Bread Toaster)
+```bash
+টোস্ট করার সময়:
+- ব্রেড উপরে করে দেই → PUSH
+- টোস্ট হয়ে গেলে উপরেরটি প্রথম বের হয় → POP
+```
+
+### ৩. ব্রাউজারের ব্যাক বাটন (Browser Back Button)
+```bash
+ওয়েবসাইট ভিজিট:
+- Google.com → YouTube.com → Facebook.com
+- ব্যাক বাটনে ক্লিক করলে: Facebook → YouTube → Google
+```
+
+## স্ট্যাক ইমপ্লিমেন্টেশন (C++ তে)
+
+### অ্যারে ব্যবহার করে:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+#define MAX_SIZE 100
+
+class Stack {
+private:
+    int arr[MAX_SIZE];
+    int top;
+
+public:
+    Stack() {
+        top = -1;
+    }
+
+    // PUSH operation
+    void push(int value) {
+        if (top >= MAX_SIZE - 1) {
+            cout << "Stack Overflow!" << endl;
+            return;
+        }
+        arr[++top] = value;
+        cout << value << " pushed to stack" << endl;
+    }
+
+    // POP operation
+    int pop() {
+        if (top < 0) {
+            cout << "Stack Underflow!" << endl;
+            return -1;
+        }
+        int value = arr[top--];
+        return value;
+    }
+
+    // PEEK operation
+    int peek() {
+        if (top < 0) {
+            cout << "Stack is empty!" << endl;
+            return -1;
+        }
+        return arr[top];
+    }
+
+    // isEmpty check
+    bool isEmpty() {
+        return (top < 0);
+    }
+
+    // Display stack
+    void display() {
+        if (isEmpty()) {
+            cout << "Stack is empty" << endl;
+            return;
+        }
+        cout << "Stack elements: ";
+        for (int i = top; i >= 0; i--) {
+            cout << arr[i] << " ";
+        }
+        cout << endl;
+    }
+};
+
+// Example usage
+int main() {
+    Stack s;
+    
+    s.push(10);
+    s.push(20);
+    s.push(30);
+    
+    s.display(); // Output: 30 20 10
+    
+    cout << "Top element: " << s.peek() << endl; // Output: 30
+    
+    cout << s.pop() << " popped from stack" << endl; // Output: 30
+    cout << s.pop() << " popped from stack" << endl; // Output: 20
+    
+    s.display(); // Output: 10
+    
+    return 0;
+}
+```
+
+### লিঙ্কড লিস্ট ব্যবহার করে:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node* next;
+    
+    Node(int value) {
+        data = value;
+        next = nullptr;
+    }
+};
+
+class Stack {
+private:
+    Node* top;
+
+public:
+    Stack() {
+        top = nullptr;
+    }
+
+    void push(int value) {
+        Node* newNode = new Node(value);
+        newNode->next = top;
+        top = newNode;
+        cout << value << " pushed to stack" << endl;
+    }
+
+    int pop() {
+        if (top == nullptr) {
+            cout << "Stack Underflow!" << endl;
+            return -1;
+        }
+        Node* temp = top;
+        int value = top->data;
+        top = top->next;
+        delete temp;
+        return value;
+    }
+
+    int peek() {
+        if (top == nullptr) {
+            cout << "Stack is empty!" << endl;
+            return -1;
+        }
+        return top->data;
+    }
+
+    bool isEmpty() {
+        return top == nullptr;
+    }
+
+    void display() {
+        if (isEmpty()) {
+            cout << "Stack is empty" << endl;
+            return;
+        }
+        cout << "Stack elements: ";
+        Node* current = top;
+        while (current != nullptr) {
+            cout << current->data << " ";
+            current = current->next;
+        }
+        cout << endl;
+    }
+};
+```
+
+## স্ট্যাকের টাইম কমপ্লেক্সিটি (Time Complexity)
+
+| Operation | Time Complexity |
+|-----------|-----------------|
+| PUSH      | O(1)            |
+| POP       | O(1)            |
+| PEEK      | O(1)            |
+| isEmpty   | O(1)            |
+
+## স্ট্যাকের ব্যবহার (Applications)
+
+### ১. UNDO/REDO functionality
+```cpp
+// Text editor example
+stack<string> undoStack;
+stack<string> redoStack;
+
+void typeText(string text) {
+    undoStack.push(currentText);
+    currentText += text;
+    // Clear redo stack when new action performed
+    while(!redoStack.empty()) redoStack.pop();
+}
+
+void undo() {
+    if(!undoStack.empty()) {
+        redoStack.push(currentText);
+        currentText = undoStack.top();
+        undoStack.pop();
+    }
+}
+```
+
+### ২. ব্র্যাকেট ম্যাচিং (Bracket Matching)
+```cpp
+bool isBalanced(string expression) {
+    stack<char> s;
+    
+    for(char c : expression) {
+        if(c == '(' || c == '{' || c == '[') {
+            s.push(c);
+        }
+        else if(c == ')' || c == '}' || c == ']') {
+            if(s.empty()) return false;
+            
+            char top = s.top();
+            s.pop();
+            
+            if((c == ')' && top != '(') ||
+               (c == '}' && top != '{') ||
+               (c == ']' && top != '[')) {
+                return false;
+            }
+        }
+    }
+    return s.empty();
+}
+```
+
+### ৩. ইনফিক্স টু পোস্টফিক্স কনভার্সন
+```cpp
+string infixToPostfix(string infix) {
+    stack<char> s;
+    string postfix = "";
+    
+    for(char c : infix) {
+        if(isalnum(c)) {
+            postfix += c;
+        }
+        else if(c == '(') {
+            s.push(c);
+        }
+        else if(c == ')') {
+            while(!s.empty() && s.top() != '(') {
+                postfix += s.top();
+                s.pop();
+            }
+            s.pop(); // Remove '('
+        }
+        else {
+            // Operator handling
+            while(!s.empty() && precedence(s.top()) >= precedence(c)) {
+                postfix += s.top();
+                s.pop();
+            }
+            s.push(c);
+        }
+    }
+    
+    while(!s.empty()) {
+        postfix += s.top();
+        s.pop();
+    }
+    
+    return postfix;
+}
+```
+
+## স্ট্যাকের সুবিধা ও অসুবিধা
+
+### সুবিধা (Advantages):
+- ডাইনামিক মেমোরি ম্যানেজমেন্ট
+- O(1) টাইমে অপারেশন
+- সহজ ইমপ্লিমেন্টেশন
+- রিকার্সনের বিকল্প
+
+### অসুবিধা (Disadvantages):
+- র্যান্ডম অ্যাক্সেস সম্ভব না
+- সাইজ লিমিটেশন (অ্যারে ইমপ্লিমেন্টেশনে)
+- মেমোরি waste (লিঙ্কড লিস্ট ইমপ্লিমেন্টেশনে)
+
+স্ট্যাক ডাটা স্ট্রাকচার প্রোগ্রামিং এর একটি ফান্ডামেন্টাল কনসেপ্ট যা বিভিন্ন অ্যালগরিদম এবং রিয়েল-লাইফ প্রোবলেম সলভিং এ ব্যাপকভাবে ব্যবহৃত হয়।
